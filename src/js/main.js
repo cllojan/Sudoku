@@ -14,6 +14,17 @@ const sudokuBoard = [
     [0, 0, 0, 4, 1, 9, 0, 0, 5],
     [0, 0, 0, 0, 8, 0, 0, 7, 9]
 ];
+const sudokuSolution = [
+    [5, 3, 4, 6, 7, 8, 9, 1, 2],
+    [6, 7, 2, 1, 9, 5, 3, 4, 8],
+    [1, 9, 8, 3, 4, 2, 5, 6, 7],
+    [8, 5, 9, 7, 6, 1, 4, 2, 3],
+    [4, 2, 6, 8, 5, 3, 7, 9, 1],
+    [7, 1, 3, 9, 2, 4, 8, 5, 6],
+    [9, 6, 1, 5, 3, 7, 2, 8, 4],
+    [2, 8, 7, 4, 1, 9, 6, 3, 5],
+    [3, 4, 5, 2, 8, 6, 1, 7, 9]
+];
 
 let selectedRow=0;
 let selectedCol=0;
@@ -75,42 +86,12 @@ function drawSudokuBoard() {
 // Llama a la función para dibujar el tablero Sudoku
 drawSudokuBoard();
 // Agrega un evento de clic al canvas para detectar la selección de una celda
-function isSudokuBoardValid(board) {
-    // Verifica filas y columnas
-    for (let i = 0; i < 9; i++) {
-        const rowSet = new Set();
-        const colSet = new Set();
-        for (let j = 0; j < 9; j++) {
-            if (rowSet.has(board[i][j]) || colSet.has(board[j][i])) {
-                return false;
-            }
-            if (board[i][j] !== 0) {
-                rowSet.add(board[i][j]);
-            }
-            if (board[j][i] !== 0) {
-                colSet.add(board[j][i]);
-            }
-        }
-    }
 
-    // Verifica bloques 3x3
-    for (let row = 0; row < 9; row += 3) {
-        for (let col = 0; col < 9; col += 3) {
-            const blockSet = new Set();
-            for (let i = row; i < row + 3; i++) {
-                for (let j = col; j < col + 3; j++) {
-                    if (blockSet.has(board[i][j])) {
-                        return false;
-                    }
-                    if (board[i][j] !== 0) {
-                        blockSet.add(board[i][j]);
-                    }
-                }
-            }
-        }
+function isValid( row, col, k) {
+    if(sudokuSolution[row][col] == k){
+        return true
     }
-
-    return true; // El tablero es válido
+    return false;
 }
 
 canvas.addEventListener("click", function(event) {
@@ -137,56 +118,14 @@ canvas.addEventListener("keydown", function(event) {
         const numberEntered = parseInt(event.key, 10);
 
         // Actualiza la celda seleccionada en currentSudokuBoard
-        sudokuBoard[selectedRow][selectedCol] = numberEntered;
+        
 
         // Vuelve a dibujar el tablero Sudoku actualizado
-        drawSudokuBoard();
+        if(isValid(selectedRow,selectedCol,numberEntered)){
+            sudokuBoard[selectedRow][selectedCol] = numberEntered;
+            
+        }
+        drawSudokuBoard();        
     }
 });
 
-function isValidNumber(number, row, col) {
-    // Verifica la fila actual
-    for (let i = 0; i < 9; i++) {
-        if (sudokuBoard[row][i] === number && i !== col) {
-            return false; // Número repetido en la fila
-        }
-    }
-
-    // Verifica la columna actual
-    for (let i = 0; i < 9; i++) {
-        if (sudokuBoard[i][col] === number && i !== row) {
-            return false; // Número repetido en la columna
-        }
-    }
-
-    // Verifica el bloque 3x3 actual
-    const blockStartRow = Math.floor(row / 3) * 3;
-    const blockStartCol = Math.floor(col / 3) * 3;
-    for (let i = blockStartRow; i < blockStartRow + 3; i++) {
-        for (let j = blockStartCol; j < blockStartCol + 3; j++) {
-            if (sudokuBoard[i][j] === number && (i !== row || j !== col)) {
-                return false; // Número repetido en el bloque
-            }
-        }
-    }
-
-    return true; // El número es válido
-}
-
-canvas.addEventListener("change", function(event) {
-    const inputValue = parseInt(event.target.value, 10);
-    const rowIndex = selectedRow;
-    const colIndex = selectedCol;
-
-    if (isValidNumber(inputValue, rowIndex, colIndex)) {
-        // Si el número ingresado es válido, actualiza la matriz currentSudokuBoard
-        sudokuBoard[rowIndex][colIndex] = inputValue;
-    } else {
-        // Si el número no es válido, muestra un mensaje de error o realiza alguna otra acción adecuada
-        alert("Número no válido. Verifica las reglas del Sudoku.");
-        // También puedes borrar el valor ingresado o hacer otra acción según tu diseño.
-    }
-
-    // Vuelve a dibujar el tablero Sudoku actualizado
-    drawSudokuBoard();
-});
