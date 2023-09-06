@@ -29,11 +29,24 @@ const sudokuSolution = [
 let selectedRow=0;
 let selectedCol=0;
 // Función para dibujar el tablero Sudoku en el canvas
+
+const cellColors = [];
+function initCell(){
+    for (let i = 0; i < 9; i++) {
+        cellColors[i] = [];
+        for (let j = 0; j < 9; j++) {
+            cellColors[i][j] = "white"; // Inicializa todas las celdas en blanco
+        }
+    }
+}
+
+
+
 function drawSudokuBoard() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const cellSize = canvas.width / 9;
-
+    
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 1;
 
@@ -55,13 +68,22 @@ function drawSudokuBoard() {
             const x = j *cellSize;
             const y = i * cellSize;
 
+
+            const cellColor = cellColors[i][j]; // Obtiene el color de la celda
+
+            // Dibuja el fondo de la celda con el color
+            ctx.fillStyle = cellColor;
+            ctx.fillRect(x, y, cellSize, cellSize);
+
             // Dibuja el borde de la celda
+            ctx.strokeStyle = "#000";
             ctx.strokeRect(x, y, cellSize, cellSize);
 
 
             // Dibuja el número en la celda (si no es cero)
             if (cellValue !== 0) {
                 ctx.font = "bold 24px Arial";
+                ctx.fillStyle = "#000";
                 ctx.fillText(cellValue.toString(), x + cellSize / 2 - 10, y + cellSize / 2 + 10);
             }
         }
@@ -72,10 +94,12 @@ function drawSudokuBoard() {
         for (let j = 1; j < 3; j++) {
             const x = j * cellSize;
             const y = i * cellSize;
+          
             ctx.strokeStyle = "#6495ED";
             ctx.lineWidth = 3;
             ctx.strokeRect(x*3, 0, 0, canvas.height);        
             ctx.strokeRect(0, y*3, canvas.width, 0);
+            
         }
 
     }
@@ -84,7 +108,9 @@ function drawSudokuBoard() {
 }
 
 // Llama a la función para dibujar el tablero Sudoku
+initCell()
 drawSudokuBoard();
+
 // Agrega un evento de clic al canvas para detectar la selección de una celda
 
 function isValid( row, col, k) {
@@ -103,10 +129,26 @@ canvas.addEventListener("click", function(event) {
     const cellSize = canvas.width / 9;
     selectedRow = Math.floor(y / cellSize);
     selectedCol = Math.floor(x / cellSize);
+    initCell()
+    const blockStartRow = Math.floor(selectedRow / 3) * 3;
+    const blockStartCol = Math.floor(selectedCol / 3) * 3;
 
+    // Cambia el color de fondo de todas las celdas en el bloque 3x3
+    for (let i = blockStartRow; i < blockStartRow + 3; i++) {
+        for (let j = blockStartCol; j < blockStartCol + 3; j++) {
+            cellColors[i][j] = "lightblue"; // Cambia "lightblue" al color que desees
+        }
+    }
+
+    for(let i=0;i<9;i++){
+        cellColors[selectedRow][i] = "lightblue"; 
+    }
+    for(let i=0;i<9;i++){
+        cellColors[i][selectedCol] = "lightblue"; 
+    }
     // Imprime la fila y la columna seleccionadas en la consola
-    console.log("Elemento seleccionado" + sudokuBoard[selectedRow][selectedCol]);
-    
+    console.log(selectedRow,selectedCol);
+    drawSudokuBoard(); 
 });
 // Agrega un evento para manejar la entrada de números en las celdas
 canvas.addEventListener("keydown", function(event) {

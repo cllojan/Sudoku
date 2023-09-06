@@ -1,0 +1,13 @@
+#canvasContainer {
+    position: relative;
+}
+
+#backgroundLayer {
+    position: absolute;
+    zIndex: 1;
+}
+
+#numberLayer {
+    position: absolute;
+    zIndex: 2;
+}
